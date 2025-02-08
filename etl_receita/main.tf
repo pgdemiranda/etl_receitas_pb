@@ -10,11 +10,23 @@ provider "google" {
   region      = var.region
 }
 
-resource "google_bigquery_dataset" "datasets" {
-  for_each = local.datasets
-  project                     = var.project
-  dataset_id                  = each.value["dataset_id"]
-  friendly_name               = each.value["friendly_name"]
-  description                 = each.value["description"]
-  location                    = each.value["location"]
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id = var.bq_dataset_name
+  location   = var.location
+
+}
+
+resource "google_storage_bucket" "receita-bucket" {
+  name          = var.gcs_bucket_name
+  location      = var.location
+  force_destroy = true
+
+  lifecycle_rule {
+    condition {
+      age = 1
+    }
+    action {
+      type = "AbortIncompleteMultipartUpload"
+    }
+  }
 }
